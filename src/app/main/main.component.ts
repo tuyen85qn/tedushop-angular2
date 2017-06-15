@@ -1,4 +1,8 @@
 import { Component, OnInit } from '@angular/core';
+import {AuthenService} from "../core/services/authen.service";
+import {UtilityService} from "../core/services/utility.service";
+import {SystemConstants} from "../core/common/system.constants";
+import {LoggedInUSer} from "../core/domain/loggedin.user";
 
 @Component({
   selector: 'app-main',
@@ -7,9 +11,17 @@ import { Component, OnInit } from '@angular/core';
 })
 export class MainComponent implements OnInit {
 
-  constructor() { }
+  public user: LoggedInUSer;
+  constructor(private authenService:AuthenService, private utilityService:UtilityService) { 
 
-  ngOnInit() {
   }
 
+  ngOnInit() {
+    this.user = this.authenService.getLoggedInUser();     
+  }
+  
+  logout(){
+    this.authenService.logout();    
+    this.utilityService.navigateToLogin();
+  }
 }

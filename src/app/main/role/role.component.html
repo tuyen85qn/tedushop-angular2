@@ -75,26 +75,35 @@
         </button>
       </div>
       <div class="modal-body">
-        <form name="addEditRole" #fRole="ngForm" class="form-horizontal form-label-left" (ngSubmit)= "saveChanged()" novalidate>
+        <form name="addEditRole" #fRole="ngForm" class="form-horizontal form-label-left" (ngSubmit)="saveChanged()" novalidate>
           <div class="form-group">
-            <label class="control-label col-md-3 col-sm-3 col-xs-12" >Tên quyền <span class="required">*</span>
+            <label class="control-label col-md-3 col-sm-3 col-xs-12">Tên quyền <span class="required">*</span>
                         </label>
             <div class="col-md-6 col-sm-6 col-xs-12">
-              <input type="text" name="Name" [(ngModel)] = "entity.Name" #Name = "ngModel" required class="form-control col-md-7 col-xs-12">
+              <input type="text" name="Name" [(ngModel)]="entity.Name" #Name="ngModel" required class="form-control col-md-7 col-xs-12">
+              <div *ngIf="Name.errors && (Name.dirty || Name.touched)" class="alert alert-danger">
+                <div [hidden]="!Name.errors.required">
+                  Name is required
+                </div>
+              </div>
             </div>
           </div>
           <div class="form-group">
-            <label class="control-label col-md-3 col-sm-3 col-xs-12">Mô tả <span class="required">*</span>
-                        </label>
+            <label class="control-label col-md-3 col-sm-3 col-xs-12">Mô tả <span class="required">*</span> </label>
             <div class="col-md-6 col-sm-6 col-xs-12">
-              <input type="text" name="Description" required [(ngModel)]="entity.Description" #Description = "ngModel" class="form-control col-md-7 col-xs-12">
+              <input type="text" name="Description" required [(ngModel)]="entity.Description" #Description="ngModel" class="form-control col-md-7 col-xs-12">
+              <div *ngIf="Description.errors && (Description.dirty || Description.touched)" class="alert alert-danger">
+                <div [hidden]="!Description.errors.required">
+                  Description is required
+                </div>
+              </div>
             </div>
-          </div>          
+          </div>
           <div class="ln_solid"></div>
           <div class="form-group">
             <div class="col-md-6 col-sm-6 col-xs-12 col-md-offset-3">
               <button type="button" class="btn btn-primary" (click)="roleModal.hide()">Hủy</button>
-              <button type="submit" class="btn btn-success">Lưu</button>
+              <button type="submit" class="btn btn-success" [disabled]="!fRole.form.valid">Lưu</button>
             </div>
           </div>
 

@@ -3,8 +3,10 @@ import { NgModule } from '@angular/core';
 import {RouterModule} from '@angular/router';
 import {appRoutes} from './app.routes';
 import { AppComponent } from './app.component';
-import {LoginModule} from './login/login.module';
-import {AuthGuard} from './core/authguard/auth.guard';
+import {AuthGuard} from './core/guards/auth.guard';
+import { AuthenService } from './core/services/authen.service';
+import { NotificationService } from './core/services/notification.service';
+import {HttpModule} from '@angular/http';
 
 
 @NgModule({
@@ -13,10 +15,11 @@ import {AuthGuard} from './core/authguard/auth.guard';
   ],
   imports: [
     BrowserModule,   
-    LoginModule,
+    HttpModule,
     RouterModule.forRoot(appRoutes)
+   
   ],
-  providers: [AuthGuard],
+  providers: [AuthGuard,AuthenService,NotificationService],
   bootstrap: [AppComponent]
 })
 export class AppModule {

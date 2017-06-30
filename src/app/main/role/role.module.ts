@@ -6,7 +6,7 @@ import { DataService } from '../../core/services/data.service';
 import { FormsModule } from '@angular/forms';
 import { PaginationModule, ModalModule } from 'ngx-bootstrap';
 
-const roleRouter: Routes = [
+const roleRoute: Routes = [
   { path: '', redirectTo: 'index', pathMatch: 'full' },
   { path: 'index', component: RoleComponent }
 ]
@@ -14,7 +14,7 @@ const roleRouter: Routes = [
   imports: [
     CommonModule,
     FormsModule,
-    RouterModule.forChild(roleRouter),
+    RouterModule.forChild(roleRoute),
     PaginationModule.forRoot(),
     ModalModule.forRoot()
   ],

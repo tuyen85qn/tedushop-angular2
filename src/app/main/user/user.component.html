@@ -1,3 +1,223 @@
-<p>
-  user works!
-</p>
+<div class="right_col" role="main">
+  <div class="">
+    <div class="page-title">
+      <div class="title_left">
+        <h3>Danh sách người dùng</h3>
+      </div>
+
+      <div class="title_right">
+        <div class="col-md-5 col-sm-5 col-xs-12 form-group pull-right top_search">
+          <div class="input-group">
+            <input type="text" class="form-control" name="filter" [(ngModel)]="filter" (ngModelChange)=loadData() placeholder="Search for...">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="clearfix"></div>
+    <div class="row">
+      <div class="col-md-12 col-sm-12 col-xs-12">
+        <div class="x_panel">
+          <div class="x_title">
+            <h2>Danh sách người dùng</h2>
+            <ul class="nav navbar-right panel_toolbox">
+              <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
+              </li>
+              <li class="dropdown">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><i class="fa fa-wrench"></i></a>
+              </li>
+              <li><a class="close-link"><i class="fa fa-close"></i></a>
+              </li>
+            </ul>
+            <div class="clearfix"></div>
+          </div>
+          <div class="x_content">
+            <button class="btn btn-primary" (click)="showAddUser()"><i class="fa fa-plus"> &nbsp;Thêm mới</i></button>
+            <table class="table table-bordered">
+              <thead>
+                <tr>
+                  <th style="width:10%">UserName</th>
+                  <th style="width:15%">FullName</th>
+                  <th style="width:10%">Email</th>
+                  <th style="width:10%">BirthDay</th>
+                  <th style="width:5%">Gender</th>
+                  <th style="width:10%">Address</th>
+                  <th style="width:10%">PhoneNumber</th>
+                  <th style="width:15%">Avatar</th>
+                  <th style="width:15%"></th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let user of users">
+                  <td>{{user.UserName}}</td>
+                  <td>{{user.FullName}}</td>
+                  <td>{{user.Email}}</td>
+                  <td>{{user.BirthDay | date:'dd/MM/yyyy' }}</td>
+                  <td>
+                    <p *ngIf="user.Gender=='True'">Nam</p>
+                    <p *ngIf="user.Gender=='False'">Nữ</p>
+                  </td>
+                  <td>{{user.Address}}</td>
+                  <td>{{user.PhoneNumber}}</td>
+                  <td><img [src]="user.Avatar" /></td>
+                  <td>
+                    <button class="btn btn-primary" (click)="showEditUser(user.Id)"><i class="fa fa-pencil-square-o"></i></button>
+                    <button class="btn btn-danger"><i class="fa fa-trash" (click)="deleteUserConfirm(user.Id)"></i></button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+            <div class="col-md-12">
+              <pagination [boundaryLinks]="true" [itemsPerPage]="pageSize" (pageChanged)="pageChanged($event)" [totalItems]="totalRow"
+                [(ngModel)]="pageIndex" class="pagination-sm" previousText="&lsaquo;" nextText="&rsaquo;" firstText="&laquo;"
+                lastText="&raquo;"></pagination>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<!--Modal add and edit-->
+<div bsModal #userModal="bs-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title pull-left">Thêm/Sửa người dùng</h4>
+        <button type="button" class="close pull-right" (click)="userModal.hide()" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form name="addEditUser" #fUser="ngForm" class="form-horizontal form-label-left" (ngSubmit)="saveChanged(fUser)" novalidate>
+          <div class="form-group">
+            <label class="control-label col-md-3 col-sm-3 col-xs-12">UserName <span class="required">*</span>
+                        </label>
+            <div class="col-md-6 col-sm-6 col-xs-12">
+              <input type="text" name="username" [(ngModel)]="entity.UserName" #username="ngModel" required class="form-control col-md-7 col-xs-12">
+              <div *ngIf="username.errors && (username.dirty || username.touched)" class="alert alert-danger">
+                <div [hidden]="!username.errors.required">
+                  UserName is required
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="form-group" *ngIf="!entity.Id">
+            <label class="control-label col-md-3 col-sm-3 col-xs-12">Mật khẩu</label>
+            <div class="col-md-6 col-sm-6 col-xs-12">
+              <input type="password" #password="ngModel" [(ngModel)]="entity.Password" required minlength="6" name="password" class="form-control">
+              <small [hidden]="password.valid || password.pristine" class="text-danger">
+                Bạn phải nhập tên ít nhất 6 ký tự
+              </small>
+            </div>
+          </div>
+          <div class="form-group" *ngIf="!entity.Id">
+            <label class="control-label col-md-3 col-sm-3 col-xs-12">Xác nhận mật khẩu</label>
+            <div class="col-md-6 col-sm-6 col-xs-12">
+              <input type="password" #confirmpassword="ngModel" [(ngModel)]="entity.ConfirmPassword" required validateEqual="password"
+                minlength="6" name="confirmpassword" class="form-control">
+              <small [hidden]="confirmpassword.valid || confirmpassword.pristine" class="text-danger">
+                Xác nhận mật khẩu sai
+              </small>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="control-label col-md-3 col-sm-3 col-xs-12">FullName <span class="required">*</span> </label>
+            <div class="col-md-6 col-sm-6 col-xs-12">
+              <input type="text" name="fullName" required [(ngModel)]="entity.FullName" #fullName="ngModel" class="form-control col-md-7 col-xs-12">
+              <div *ngIf="fullName.errors && (fullName.dirty || fullName.touched)" class="alert alert-danger">
+                <div [hidden]="!fullName.errors.required">
+                  FullName is required
+                </div>
+
+              </div>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="control-label col-md-3 col-sm-3 col-xs-12">Address <span class="required">*</span> </label>
+            <div class="col-md-6 col-sm-6 col-xs-12">
+              <input type="text" name="address" required [(ngModel)]="entity.Address" #address="ngModel" class="form-control col-md-7 col-xs-12">
+              <div *ngIf="address.errors && (address.dirty || address.touched)" class="alert alert-danger">
+                <div [hidden]="!address.errors.required">
+                  Address is required
+                </div>
+
+              </div>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="control-label col-md-3 col-sm-3 col-xs-12">Email <span class="required">*</span> </label>
+            <div class="col-md-6 col-sm-6 col-xs-12">
+              <input type="email" name="email" required [(ngModel)]="entity.Email" #email="ngModel" pattern="^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$"
+                class="form-control col-md-7 col-xs-12">
+              <div *ngIf="email.errors && (email.dirty || email.touched)" class="alert alert-danger">
+                <div [hidden]="!email.errors.required">
+                  Email is required
+                </div>
+                <div *ngIf="email.errors && email.errors.pattern">
+                  Email is invalid
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="control-label col-md-3 col-sm-3 col-xs-12">BirthDay <span class="required">*</span> </label>
+            <div class="col-md-6 col-sm-6 col-xs-12">
+              <input type="text" #birthday="ngModel" (selected)="selectDate($event)" daterangepicker [options]="optionPickers" [(ngModel)]="entity.BirthDay"
+                name="birthday" class="form-control">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="control-label col-md-3 col-sm-3 col-xs-12">PhoneNumber <span class="required">*</span> </label>
+            <div class="col-md-6 col-sm-6 col-xs-12">
+              <input type="text" name="phonenumber" required [(ngModel)]="entity.PhoneNumber" #phonenumber="ngModel" class="form-control col-md-7 col-xs-12">
+              <div *ngIf="phonenumber.errors && (phonenumber.dirty || phonenumber.touched)" class="alert alert-danger">
+                <div [hidden]="!phonenumber.errors.required">
+                  PhoneNumber is required
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="control-label col-md-3 col-sm-3 col-xs-12">Gender <span class="required">*</span> </label>
+            <div class="col-md-6 col-sm-6 col-xs-12">
+              <input name="gender" type="radio" #gender="ngModel" (change)="selectGender($event)" [(ngModel)]="entity.Gender" value="True"
+                [checked]="entity.Gender=='True'" />Nam
+              <input name="gender" type="radio" #gender="ngModel" (change)="selectGender($event)" [(ngModel)]="entity.Gender" value="False"
+                [checked]="entity.Gender=='False'" />Nữ
+            </div>
+          </div>
+          <div class="form-group">
+             <div class="form-group">
+            <label class="control-label col-md-3 col-sm-3 col-xs-12">Avatar</label>
+            <div class="col-md-6 col-sm-6 col-xs-12">
+              <input type="file" #avatar name="avatar" class="form-control">
+              <p class="help-block label label-danger"> chỉ hỗ trợ định dạng *.png, *.jpg, *.jpeg </p>
+              <input type="hidden" [(ngModel)]="entity.Avatar" name="avatarUrl" />
+            </div>
+            <div class="col-md-3 col-sm-3 col-xs-12" *ngIf="entity.Avatar">
+              <img [src]="entity.Avatar" width="128" />
+            </div>
+          </div>
+
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="control-label col-md-3 col-sm-3 col-xs-12">Thuộc quyền <span class="required">*</span> </label>
+            <div class="col-md-6 col-sm-6 col-xs-12">
+              <ss-multiselect-dropdown [options]="allRoles" [(ngModel)]="entity.Roles" [ngModelOptions]="{standalone: true}"></ss-multiselect-dropdown>
+            </div>
+          </div>
+          <div class="ln_solid"></div>
+          <div class="form-group">
+            <div class="col-md-6 col-sm-6 col-xs-12 col-md-offset-3">
+              <button type="button" class="btn btn-primary" (click)="closeForm(fUser)">Hủy</button>
+              <button type="submit" class="btn btn-success">Lưu</button>
+            </div>
+          </div>
+
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
